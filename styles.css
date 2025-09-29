@@ -1,0 +1,286 @@
+/* Night Mode Minimal MindMap Styles */
+:root {
+    /* Night Mode Color Palette */
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #2a2a2a;
+
+    --text-primary: #ffffff;
+    --text-secondary: #e0e0e0;
+    --text-muted: #999999;
+
+    --border-primary: #666666;
+    --border-secondary: #444444;
+    --border-accent: #888888;
+
+    --node-fill: #2a2a2a;
+    --node-stroke: #666666;
+    --node-selected: #555555;
+
+    --connection-line: #666666;
+    --connection-hover: #888888;
+
+    /* Sizing */
+    --node-default-size: 60;
+    --stroke-width: 2;
+    --toolbar-height: 50px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+}
+
+.night-theme {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+}
+
+/* Minimal Toolbar */
+.toolbar {
+    height: var(--toolbar-height);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 20px;
+}
+
+.tool-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-btn:hover {
+    background: var(--node-selected);
+    border-color: var(--border-accent);
+    color: var(--text-primary);
+}
+
+.tool-btn.active {
+    background: var(--border-accent);
+    border-color: var(--text-muted);
+    color: var(--text-primary);
+}
+
+/* 선 스타일 버튼 특별 스타일 */
+.tool-btn[data-style="dashed"] {
+    background: var(--node-selected);
+    border-color: var(--border-accent);
+}
+
+.tool-btn svg {
+    width: 20px;
+    height: 4px;
+    pointer-events: none;
+}
+
+.tool-btn svg line {
+    transition: stroke-dasharray 0.3s ease;
+}
+
+/* Canvas */
+#canvas {
+    flex: 1;
+    background: var(--bg-primary);
+    cursor: default;
+    display: block;
+    width: 100%;
+    height: calc(100vh - var(--toolbar-height));
+}
+
+#canvas.connect-mode {
+    cursor: crosshair;
+}
+
+#canvas.delete-mode {
+    cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="red" d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3H9zM7 6h10v13H7V6z"/></svg>') 12 12, pointer;
+}
+
+/* Node Styles */
+.node {
+    cursor: move;
+    transition: opacity 0.2s ease;
+}
+
+.node:hover {
+    opacity: 0.8;
+}
+
+.node.selected {
+    filter: drop-shadow(0 0 8px var(--border-accent));
+}
+
+.node.multi-selected {
+    filter: drop-shadow(0 0 6px rgba(255, 165, 0, 0.8));
+}
+
+.node.selecting {
+    filter: drop-shadow(0 0 4px rgba(100, 149, 237, 0.6));
+    opacity: 0.7;
+}
+
+.node circle,
+.node rect {
+    fill: var(--node-fill);
+    stroke: var(--node-stroke);
+    stroke-width: var(--stroke-width);
+    transition: all 0.2s ease;
+}
+
+.node.selected circle,
+.node.selected rect {
+    stroke: var(--border-accent);
+    stroke-width: 3;
+    stroke-dasharray: 4,4;
+}
+
+.node.multi-selected circle,
+.node.multi-selected rect {
+    stroke: #FFA500;
+    stroke-width: 2;
+    stroke-dasharray: 2,2;
+}
+
+.node.selecting circle,
+.node.selecting rect {
+    stroke: #6495ED;
+    stroke-width: 2;
+    stroke-dasharray: 1,1;
+}
+
+.node text {
+    fill: var(--text-primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Connection Lines */
+.connection {
+    stroke: var(--connection-line);
+    stroke-width: var(--stroke-width);
+    fill: none;
+    cursor: pointer;
+    transition: stroke 0.2s ease;
+}
+
+.connection:hover {
+    stroke: var(--connection-hover);
+    stroke-width: 3;
+}
+
+.connection.selected {
+    stroke: var(--border-accent);
+    stroke-width: 3;
+    stroke-dasharray: 6,6;
+}
+
+.connection.dashed {
+    stroke-dasharray: 8,4;
+}
+
+.connection.solid {
+    stroke-dasharray: none;
+}
+
+/* Temporary Connection Line */
+.temp-connection {
+    stroke: var(--border-accent);
+    stroke-width: var(--stroke-width);
+    stroke-dasharray: 4,4;
+    fill: none;
+    pointer-events: none;
+}
+
+/* Drag Selection Box */
+.selection-box {
+    fill: rgba(100, 149, 237, 0.1);
+    stroke: #6495ED;
+    stroke-width: 1;
+    stroke-dasharray: 3,3;
+    pointer-events: none;
+}
+
+/* Text Editing */
+.text-input {
+    position: absolute;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    padding: 4px 8px;
+    outline: none;
+    z-index: 1000;
+}
+
+.text-input:focus {
+    border-color: var(--border-accent);
+    box-shadow: 0 0 0 2px rgba(136, 136, 136, 0.3);
+}
+
+/* Performance Optimizations */
+.node,
+.connection {
+    will-change: transform;
+}
+
+/* Hide scrollbars but keep functionality */
+::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .toolbar {
+        padding: 0 10px;
+        gap: 6px;
+    }
+
+    .tool-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .node text {
+        font-size: 12px;
+    }
+}

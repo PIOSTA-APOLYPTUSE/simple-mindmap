@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Mode Minimal MindMap</title>
+    <meta name="description" content="TDD 기반 나이트모드 최적화 미니멀 마인드맵 애플리케이션">
+    <meta name="keywords" content="mindmap, 마인드맵, night mode, minimal, TDD">
+    <meta name="author" content="MindMap App">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" class="night-theme">
+        <div class="toolbar">
+            <button id="addCircle" class="tool-btn" title="원형 노드 추가">○</button>
+            <button id="addRect" class="tool-btn" title="사각형 노드 추가">□</button>
+            <button id="connectMode" class="tool-btn" title="연결 모드">⟷</button>
+            <button id="lineStyle" class="tool-btn" title="선 스타일: 실선" data-style="solid">
+                <svg width="20" height="4" viewBox="0 0 20 4">
+                    <line x1="0" y1="2" x2="20" y2="2" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </button>
+            <button id="deleteMode" class="tool-btn" title="삭제 모드: 비활성">🗑</button>
+            <button id="clear" class="tool-btn" title="모두 지우기">×</button>
+        </div>
+        <svg id="canvas" width="100%" height="100%">
+            <!-- 연결선을 위한 마커 정의 -->
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7"
+                        refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#666666"/>
+                </marker>
+            </defs>
+        </svg>
+    </div>
+
+    <script src="mindmap.js"></script>
+    <script>
+        // Jest 스타일 테스트 함수들 (브라우저 환경)
+        function describe(name, fn) {
+            console.group(`📋 ${name}`);
+            try {
+                fn();
+                console.log(`✅ ${name} 완료`);
+            } catch (error) {
+                console.error(`❌ ${name} 실패:`, error);
+            }
+            console.groupEnd();
+        }
+
+        function it(name, fn) {
+            try {
+                fn();
+                console.log(`  ✅ ${name}`);
+            } catch (error) {
+                console.error(`  ❌ ${name}:`, error.message);
+                throw error;
+            }
+        }
+
+        function expect(actual) {
+            return {
+                toBe: (expected) => {
+                    if (actual !== expected) {
+                        throw new Error(`Expected ${expected}, got ${actual}`);
+                    }
+                },
+                toBeTruthy: () => {
+                    if (!actual) {
+                        throw new Error(`Expected truthy value, got ${actual}`);
+                    }
+                },
+                toEqual: (expected) => {
+                    if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+                        throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+                    }
+                },
+                toBeLessThan: (expected) => {
+                    if (actual >= expected) {
+                        throw new Error(`Expected ${actual} to be less than ${expected}`);
+                    }
+                },
+                toMatch: (regex) => {
+                    if (!regex.test(actual)) {
+                        throw new Error(`Expected ${actual} to match ${regex}`);
+                    }
+                }
+            };
+        }
+
+        function beforeEach(fn) {
+            // 단순 구현
+            fn();
+        }
+
+        function afterEach(fn) {
+            // 단순 구현
+            fn();
+        }
+
+        // 페이지 로드 완료 후 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            window.mindMap = new MindMap();
+            console.log('🌙 Night Mode Minimal MindMap 로드 완료');
+
+            // 개발자 도구에서 테스트 실행 가능
+            window.runTests = () => {
+                // 여기에 테스트 코드를 추가할 수 있습니다
+                console.log('테스트를 실행하려면 test.spec.js를 참조하세요');
+            };
+        });
+    </script>
+</body>
+</html>

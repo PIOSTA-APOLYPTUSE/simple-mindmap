@@ -267,6 +267,7 @@ body {
     scrollbar-width: none;
 }
 
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .toolbar {
@@ -284,3 +285,4 @@ body {
         font-size: 12px;
     }
 }
+

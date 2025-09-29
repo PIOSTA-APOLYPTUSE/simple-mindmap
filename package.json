@@ -1,0 +1,40 @@
+{
+  "name": "simple-mindmap",
+  "version": "1.0.0",
+  "description": "TDD 기반 나이트모드 미니멀 마인드맵 애플리케이션",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "test": "npx jest",
+    "test:watch": "npx jest --watch",
+    "build": "npm run test && npm run minify",
+    "minify": "npx terser mindmap.js -o mindmap.min.js && npx csso styles.css -o styles.min.css",
+    "start": "npm run dev",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "mindmap",
+    "TDD",
+    "night-mode",
+    "minimal",
+    "productivity"
+  ],
+  "author": "MindMap Team",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.0.0",
+    "serve": "^14.0.0",
+    "terser": "^5.0.0",
+    "csso-cli": "^4.0.0"
+  },
+  "dependencies": {},
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testMatch": ["**/*.spec.js", "**/*.test.js"],
+    "setupFilesAfterEnv": ["<rootDir>/test-setup.js"]
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

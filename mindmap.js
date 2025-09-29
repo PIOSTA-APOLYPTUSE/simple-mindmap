@@ -98,9 +98,20 @@ class MindMap {
     }
 
     setupCanvas() {
-        // 캔버스 크기 설정
+        // 캔버스 크기 설정 - 윈도우 리사이즈 시에도 업데이트
+        this.updateCanvasSize();
+
+        // 윈도우 리사이즈 이벤트 리스너 추가
+        window.addEventListener('resize', () => {
+            this.updateCanvasSize();
+        });
+    }
+
+    updateCanvasSize() {
         const rect = this.canvas.getBoundingClientRect();
         this.canvas.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
+        this.canvas.setAttribute('width', rect.width);
+        this.canvas.setAttribute('height', rect.height);
     }
 
     // ========== 노드 관리 ==========
@@ -265,9 +276,9 @@ class MindMap {
             // 드래그 시작
             isDragging = true;
             dragHappened = false;
-            const rect = this.canvas.getBoundingClientRect();
-            dragOffset.x = e.clientX - rect.left - node.x;
-            dragOffset.y = e.clientY - rect.top - node.y;
+            const coords = this.getMouseCoordinates(e);
+            dragOffset.x = coords.x - node.x;
+            dragOffset.y = coords.y - node.y;
 
             if (!this.selectedNodes.includes(node)) {
                 this.selectNode(node);
@@ -305,9 +316,9 @@ class MindMap {
             if (!isDragging) return;
 
             dragHappened = true;
-            const rect = this.canvas.getBoundingClientRect();
-            const newX = e.clientX - rect.left - dragOffset.x;
-            const newY = e.clientY - rect.top - dragOffset.y;
+            const coords = this.getMouseCoordinates(e);
+            const newX = coords.x - dragOffset.x;
+            const newY = coords.y - dragOffset.y;
 
             // 다중 선택된 노드들을 함께 이동
             if (this.selectedNodes.length > 1) {
@@ -455,9 +466,14 @@ class MindMap {
         input.type = 'text';
         input.value = node.text;
         input.className = 'text-input';
-        input.style.left = `${rect.left + node.x - 50}px`;
-        input.style.top = `${rect.top + node.y - 10}px`;
-        input.style.width = '100px';
+
+        // 노드 중심에 정확히 위치시키기
+        const inputWidth = 100;
+        const inputHeight = 30;
+        input.style.left = `${rect.left + node.x - inputWidth / 2}px`;
+        input.style.top = `${rect.top + node.y - inputHeight / 2}px`;
+        input.style.width = `${inputWidth}px`;
+        input.style.height = `${inputHeight}px`;
 
         document.body.appendChild(input);
         input.focus();
@@ -690,17 +706,23 @@ class MindMap {
 
     handleCanvasMouseMove(e) {
         if (this.isConnecting && this.tempLine) {
-            const rect = this.canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            this.tempLine.setAttribute('x2', x);
-            this.tempLine.setAttribute('y2', y);
+            const coords = this.getMouseCoordinates(e);
+            this.tempLine.setAttribute('x2', coords.x);
+            this.tempLine.setAttribute('y2', coords.y);
         }
 
         if (this.isSelecting) {
             this.updateDragSelection(e);
         }
+    }
+
+    // 마우스 좌표를 SVG 좌표계로 정확히 변환하는 헬퍼 메소드
+    getMouseCoordinates(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
     }
 
     handleCanvasMouseUp(e) {
@@ -711,9 +733,9 @@ class MindMap {
 
     startDragSelection(e) {
         this.isSelecting = true;
-        const rect = this.canvas.getBoundingClientRect();
-        this.selectionStart.x = e.clientX - rect.left;
-        this.selectionStart.y = e.clientY - rect.top;
+        const coords = this.getMouseCoordinates(e);
+        this.selectionStart.x = coords.x;
+        this.selectionStart.y = coords.y;
 
         // 선택 박스 생성
         this.selectionBox = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -728,9 +750,9 @@ class MindMap {
     updateDragSelection(e) {
         if (!this.isSelecting || !this.selectionBox) return;
 
-        const rect = this.canvas.getBoundingClientRect();
-        const currentX = e.clientX - rect.left;
-        const currentY = e.clientY - rect.top;
+        const coords = this.getMouseCoordinates(e);
+        const currentX = coords.x;
+        const currentY = coords.y;
 
         const x = Math.min(this.selectionStart.x, currentX);
         const y = Math.min(this.selectionStart.y, currentY);
